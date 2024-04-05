@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reminders', function (Blueprint $table) {
-            $table->id('id');
+            $table->id();
             $table->date('date');
             $table->time('time');
             $table->timestamps();

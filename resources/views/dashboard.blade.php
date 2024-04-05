@@ -216,16 +216,20 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-        <div class="category">
-            <label  for="category">Category:</label>
-            <select class="form-control" id="category">
-                <option value="personal">Personal</option>
-                <option value="work">Work</option>
-                <option value="sport">Sport</option>
-                <!-- Add other default categories as needed -->
-            </select>
-            <button class="add-button" onclick="openAddCategory()">Add Category</button>
-        </div>
+            <div class="category">
+                <label  for="category">Category:</label>
+                <select class="form-control" id="category" name="category" onchange="filterTasks(this.value)">
+                
+                @foreach($categories as $category)
+                <option value="{{ $category->id }}" @if($category->id == $selectedCategory) selected @endif>{{ $category->category_title }}</option>
+                    <!-- <option value="work">Work</option>
+                    <option value="sport">Sport</option> -->
+                    <!-- Add other default categories as needed -->
+                @endforeach
+                </select>
+                <button class="add-button" onclick="openAddCategory()">Add Category</button>
+                
+            </div>
             <div class="card card-white">
                 <div class="card-body">
                     <div>
@@ -241,7 +245,31 @@
                     </div>
                     </div>
                     <div class="todo-list">
-                        <div class="todo-item">
+                        
+                    @if($selectedCategory == null)
+                        @php $selectedCategory = $categories->first()->id; @endphp
+                    @endif
+
+                        @foreach($task as $task)
+                            @if($task->categoryID == $selectedCategory)
+                                <div class="todo-item">
+                                    
+                                        <div class="checker">
+                                            <span class=""><input type="checkbox"></span>
+                                        </div>
+                                        <span>{{ $task->task_title }}</span>
+                                        <span class="tag tag-{{ $task->tag }}">{{ $task->tag }}</span>
+                                        <span class="item_left">
+                                            <span class="due-date">Due: {{ $task->due_date }}  {{$task->time}}</span>
+                                            <a href="{{route('sub_task',['id' => $task->id])}}" class="float-right view-todo-item" onclick="openViewPopup({{ $task->id }})"><i class="fas fa-eye"></i></a>
+                                            <a href="{{route('task.edit', $task['id'])}}" class="float-right edit-todo-item" onclick="openEditPopup({{ $task->id }})"><i class="fas fa-edit"></i></a>
+                                            <a href="{{route('task.delete', $task['id'])}}" class="float-right remove-todo-item" onclick="removeTask({{ $task->id }})"><i class="fas fa-trash-alt"></i></a>
+                                        </span>
+                                    
+                                </div>
+                            @endif
+                        @endforeach
+                        <!-- <div class="todo-item">
                             <div class="checker"><span class=""><input type="checkbox"></span></div>
                             <span>Create theme</span>
                             <span class="tag tag-high">High</span>
@@ -281,10 +309,10 @@
                             <span class="item_left">
                             <span class="due-date">Due: 2024-04-04</span>
                             <a href="javascript:void(0);" class="float-right view-todo-item" onclick="openViewPopup()"><i class="fas fa-eye"></i></a>
-                            <a href="javascript:void(0);" class="float-right edit-todo-item" onclick="openEditPopup()"><i class="fas fa-edit"></i></a>
+                            <a href="{{route('task.edit', $task['id'])}}" class="float-right edit-todo-item" onclick="openEditPopup()"><i class="fas fa-edit"></i></a>
                             <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="fas fa-trash-alt"></i></a>
                             </span>
-                        </div>
+                        </div> -->
                         <!-- Add more todo items here -->
                     </div>
                 </div>
@@ -296,121 +324,129 @@
 <div class="popup-overlay" id="addTaskPopup">
     <div class="popup">
         <span class="popup-close" onclick="closeAddTaskPopup()">×</span>
-        <h2>Add Task</h2>
-        <input type="text" class="form-control" id="addTaskInput" placeholder="Add Task ..........">
+        <h1>Add Task</h1>
+        <form class="popup-form" action ="{{ route('task.add')}}" method="POST" onsubmit="submitForm(event)">
+        {{csrf_field()}}
         <div class="form-group">
-            <label for="addDueDate">Due Date:</label>
-            <input type="date" class="form-control" id="addDueDate">
+            <label for="addTaskInput">Title:</label>
+            <input type="text" class="form-control" id="addTaskInput" placeholder="Add Task .........." name="task_title">
         </div>
         <div class="form-group">
+            <label for="addDueDate">Due Date:</label>
+            <input type="date" class="form-control" id="addDueDate" name="due_date">
+        </div>
+        <div class="form-group">
+            <label for="addDueTime">Due Time:</label>
+            <input type="time" class="form-control" id="addDueTime" name= "time">
+        </div>
+        <div class="form-group">
+            
             <label for="category">Category:</label>
-            <select class="form-control" id="addCategory">
-                <option value="personal">Personal</option>
-                <option value="work">Work</option>
-                <option value="sport">Sport</option>
+            <select class="form-control" id="category" name="category_id">
+            @foreach($categories as $category)
+                <option value="{{ $category->id }}">{{ $category->category_title }}</option>
+                <!-- <option value="work">Work</option>
+                <option value="sport">Sport</option> -->
+                <!-- Add other default categories as needed -->
+            @endforeach
             </select>
+           
         </div>
         <div class="form-group">
             <label for="editTag">Tag:</label>
-            <select class="form-control" id="editTag">
+            <select class="form-control" id="editTag" name="tag">
                 <option value="high">High</option>
                 <option value="mid">Mid</option>
                 <option value="low">Low</option>
                 <option value="urgent">Urgent</option>
             </select>
         </div>
-        <div class="popup-buttons">
-            <button onclick="addNewTaskButton()">Add Task</button>
+        <div class="form-group">
+            <label for="note">Notes:</label>
+            <input type="text" class="form-control" id="note" placeholder="Add Notes .........." name="notes">
         </div>
+        <div class="popup-buttons">
+        <button type="submit">Submits</button>
+        </div>
+        </form>
+        
     </div>
 </div>
 
 <!-- Edit Todo Modal -->
-<div class="popup-overlay" id="editTodoPopup">
+<!-- <div class="popup-overlay" id="editTodoPopup">
     <div class="popup">
         <span class="popup-close" onclick="closeEditPopup()">×</span>
         <h2>Edit Todo</h2>
-        <input type="text" class="form-control" id="editTodoInput" placeholder="Edit Todo...">
+        <form class="popup-form"  onsubmit="submitForm(event)">
+        {{csrf_field()}}
         <div class="form-group">
-            <label for="editDueDate">Due Date:</label>
-            <input type="date" class="form-control" id="editDueDate">
+            <label for="addTaskInput">Title:</label>
+            <input type="text" class="form-control" id="addTaskInput" placeholder="Add Task .........." name="task_title">
+        </div>
+        <div class="form-group">
+            <label for="addDueDate">Due Date:</label>
+            <input type="date" class="form-control" id="addDueDate" name="due_date">
+        </div>
+        <div class="form-group">
+            <label for="addDueTime">Due Time:</label>
+            <input type="time" class="form-control" id="addDueTime" name= "time">
         </div>
         <div class="form-group">
             <label for="editTag">Tag:</label>
-            <select class="form-control" id="editTag">
+            <select class="form-control" id="editTag" name="tag">
                 <option value="high">High</option>
                 <option value="mid">Mid</option>
                 <option value="low">Low</option>
                 <option value="urgent">Urgent</option>
             </select>
         </div>
-        <div class="popup-buttons">
-            <button onclick="updateTodo()">Save changes</button>
+        <div class="form-group">
+            <label for="note">Notes:</label>
+            <input type="text" class="form-control" id="note" placeholder="Add Notes .........." name="notes">
         </div>
+        <div class="popup-buttons">
+        <button type="submit">Submits</button>
     </div>
-</div>
+</div> -->
 
-<!-- View Todo Modal -->
+<!-- add Category Modal -->
 <div class="popup-overlay" id="addcategory">
     <div class="popup">
         <span class="popup-close" onclick="closeAddPopup()">×</span>
         <h2>Add Category</h2>
-        <input type="text" class="form-control" id="addcategory" placeholder="Add Category...">
-        <div class="popup-buttons">
-            <button onclick="updateTodo()">Save changes</button>
-        </div>
+        <form class="popup-form" action="{{ route('category.add') }}" method="POST" >
+            {{ csrf_field() }}
+            <div class="form-group">
+                <label for="addCategoryInput">Title:</label>
+                <input type="text" class="form-control" id="addCategoryInput" placeholder="Add Category ..." name="category_title">
+            </div>
+            <div class="popup-buttons">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
     </div>
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBud7TlRbs/ic4AwGcFZOxg5DpPt8EgeUIgIwzjWfXQKWA3" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
 <script>
-    function openEditPopup() {
-        // Get the current todo item's text, due date, and tag
-        const todoText = $(this).closest('.todo-item').find('span:first').text();
-        const dueDate = $(this).closest('.todo-item').find('.due-date').text().split(': ')[1];
-        const tag = $(this).closest('.todo-item').find('.tag').text().toLowerCase();
 
-        // Set the values in the edit popup
-        $('#editTodoInput').val(todoText);
-        $('#editDueDate').val(dueDate);
-        $('#editTag').val(tag);
-        document.getElementById("editTodoPopup").style.display = "flex";
-    }
-
-    function closeEditPopup() {
-        document.getElementById("editTodoPopup").style.display = "none";
-    }
-
-    function openViewPopup() {
-        window.location.href = 'subtask';
-    }
-
-    function openAddCategory() {
-        document.getElementById("addCategoryPopup").style.display = "none";
+    function filterTasks() {
+        var selectedCategory = document.getElementById('category').value;
+        window.location.href = "{{ route('dashboard') }}?category=" + selectedCategory;
     }
 
     function openAddCategory() {
         
-        const todoText = $(this).closest('.todo-item').find('span:first').text();
-
-        $('#addcategory').val(todoText);
         document.getElementById("addcategory").style.display = "flex";
     }
 
     function openAddTask() {
         // Get the current todo item's text, due date, and tag
-        const todoText = $(this).closest('.todo-item').find('span:first').text();
-        const dueDate = $(this).closest('.todo-item').find('.due-date').text().split(': ')[1];
-        const tag = $(this).closest('.todo-item').find('.tag').text().toLowerCase();
-        const category = $("#category").val();
-
-        // Set the values in the edit popup
-        $('#editTodoInput').val(todoText);
-        $('#editDueDate').val(dueDate);
-        $('#editTag').val(tag);
-        $('#addCategory').val(category); 
+         
         document.getElementById("addTaskPopup").style.display = "flex";
     }
 
@@ -421,59 +457,6 @@
         document.getElementById("addTaskPopup").style.display = "none";
     }
 
-    function closeViewPopup() {
-        document.getElementById("viewTodoPopup").style.display = "none";
-    }
-
-    function updateTodo() {
-        const editedTodo = $('#editTodoInput').val();
-        const editedDueDate = $('#editDueDate').val();
-        const editedTag = $('#editTag').val();
-        const category = $('#category').val();
-
-        // Update the todo item with the edited content
-        // For example, you can update the text, due date, and tag of the todo item
-        $('.todo-list .todo-item').each(function() {
-            if ($(this).hasClass('editing')) {
-                $(this).find('span:first').text(editedTodo);
-                $(this).find('.due-date').text('Due: ' + editedDueDate);
-                if (editedTag === 'none') {
-                    $(this).find('.tag').remove();
-                } else {
-                    $(this).find('.tag').text(editedTag.charAt(0).toUpperCase() + editedTag.slice(1));
-                }
-                $(this).removeClass('editing');
-                closeEditPopup();
-            }
-        });
-
-        function addNewTaskButton() {
-    const todoText = $("#addTaskInput").val();
-    const dueDate = $("#addDueDate").val();
-    const category = $("#addCategory").val();
-    const tag = $("#editTag").val();
-
-    if (todoText.trim() === "") {
-        alert("Please enter a task.");
-    } else {
-        const newTask = `
-            <div class="todo-item">
-                <div class="checker"><span class=""><input type="checkbox"></span></div>
-                <span>${todoText}</span>
-                <span class="due-date">Due Date: ${dueDate}</span>
-                <span class="tag">Tag: ${tag}</span>
-                <span class="category">Category: ${category}</span>
-                <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="icon-close"></i></a>
-            </div>`;
-        $(newTask).insertAfter('.todo-list .todo-item:last-child');
-        $("#addTaskInput").val('');
-        $("#addDueDate").val('');
-        $("#addCategory").val('');
-        $("#editTag").val('');
-        closeAddTaskPopup();
-    }
-}
-    }
 
     $( document ).ready(function() {
     
@@ -538,26 +521,6 @@
     });
     };
     
-    todo();
-    
-    $(".add-task").keypress(function (e) {
-        if ((e.which == 13)&&(!$(this).val().length == 0)) {
-            $('<div class="todo-item"><div class="checker"><span class=""><input type="checkbox"></span></div> <span>' + $(this).val() + '</span> <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="icon-close"></i></a></div>').insertAfter('.todo-list .todo-item:last-child');
-            $(this).val('');
-        } else if(e.which == 13) {
-            alert('Please enter new task');
-        }
-        $(document).on('.todo-list .todo-item.added input').click(function() {
-            if($(this).is(':checked')) {
-                $(this).parent().parent().parent().toggleClass('complete');
-            } else {
-                $(this).parent().parent().parent().toggleClass('complete');
-            }
-        });
-        $('.todo-list .todo-item.added .remove-todo-item').click(function() {
-            $(this).parent().remove();
-        });
-    });
 });
 </script>
 </body>

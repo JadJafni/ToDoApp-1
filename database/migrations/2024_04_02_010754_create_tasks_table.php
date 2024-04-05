@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('categoryID');
-            $table->foreign('categoryID')->references('id')->on('categories');
             $table->unsignedBigInteger('userID');
             $table->unsignedBigInteger('statusID');
-            $table->unsignedBigInteger('reminderID');
+            $table->unsignedBigInteger('reminderID')->nullable();
             $table->string('task_title', 255);
             $table->text('notes')->nullable();
             $table->string('tag', 255)->nullable();
@@ -25,10 +24,6 @@ return new class extends Migration
             $table->time('time')->nullable();
             $table->timestamps(); 
             
-            
-            $table->foreign('userID')->references('id')->on('users');
-            $table->foreign('statusID')->references('id')->on('status');
-            $table->foreign('reminderID')->references('id')->on('reminders');
         });
     }
 

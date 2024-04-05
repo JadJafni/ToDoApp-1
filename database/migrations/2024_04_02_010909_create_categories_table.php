@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('category_title', 255);
             $table->timestamps(); // created_at and updated_at
             
-            $table->foreign('userID')->references('id')->on('users');
         });
     }
 

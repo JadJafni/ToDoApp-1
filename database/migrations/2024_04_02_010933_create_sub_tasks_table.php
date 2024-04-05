@@ -12,14 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sub_tasks', function (Blueprint $table) {
-            $table->id('id');
+            $table->id();
             $table->unsignedInteger('statusID');
             $table->unsignedInteger('taskID');
             $table->string('title', 255);
             $table->timestamps();
-            
-            $table->foreign('statusID')->references('id')->on('status');
-            $table->foreign('taskID')->references('id')->on('tasks');
+
         });
     }
 

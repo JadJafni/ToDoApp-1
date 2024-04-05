@@ -180,6 +180,17 @@
         .popup-close:hover {
             color: #555;
         }
+        .add-button{
+            background-color: #fff;
+            border-radius: 4px;
+            position:relative;
+            padding: 5px 15px;
+            background-color: #4CAF50;
+            color: white;
+            float: right;
+            margin: 0 10px;
+            margin-top: 3 10px;
+        }
     </style>
 </head>
 <body>
@@ -188,17 +199,24 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card card-white">
+            <button class=" add-button" onclick="openAddSub_Task()">Add Sub Task</button>
                 <div class="card-body">
                     <div class="todo-list">
-                    <h2>Create theme</h2>
+                    @foreach($task as $task)
+                    <h2>{{ $task->task_title }}</h2>
+                    
+                        @foreach($sub_task as $sub_task)
+                        @if($sub_task->taskID == $task->id)
                         <div class="todo-item">
                             <div class="checker"><span class=""><input type="checkbox"></span></div>
-                            <span>task1</span>
+                            <span>{{ $sub_task->title }}</span>
                             <span class="item_left">
-                            <a href="javascript:void(0);" class="float-right edit-todo-item" onclick="openEditPopup()"><i class="fas fa-edit"></i></a>
-                            <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="fas fa-trash-alt"></i></a>
+                            <a href="{{route('sub_task.edit', $sub_task['id'])}}" class="float-right edit-todo-item" onclick="openEditPopup({{ $sub_task->id }})"><i class="fas fa-edit"></i></a>
+                            <a href="{{route('sub_task.delete', $sub_task['id'])}}" class="float-right remove-todo-item"><i class="fas fa-trash-alt"></i></a>
                             </span>
                         </div>
+                        @endif
+                        @endforeach
                         <div class="todo-item">
                             <div class="checker"><span class=""><input type="checkbox"></span></div>
                             <span>Work on wordpress</span>
@@ -224,8 +242,11 @@
                             </span>
                         </div>
                         <div class="todo-item">
-                            <span>notes</span>
+                            
+                            <span>{{ $task->notes }}</span>
+                            
                         </div>
+                    @endforeach
                         <!-- Add more todo items here -->
                     </div>
                 </div>
@@ -234,8 +255,23 @@
     </div>
 </div>
 
+<div class="popup-overlay" id="AddSub_Task">
+    <div class="popup">
+        <span class="popup-close" onclick="closeAddPopup()">×</span>
+        <h2>Add Category</h2>
+        <form class="popup-form" action ="{{ route('sub_task.add',['id' => $task->id])}}" method="POST" onsubmit="submitForm(event)">
+        {{csrf_field()}}
+        <input type="hidden" name="id" value="{{ $task->id }}">
+        <input type="text" class="form-control" id="addcategory" placeholder="Add Category..." name="title">
+        <div class="popup-buttons">
+        <button type="submit">Submits</button>
+        </div>
+        </form>
+    </div>
+</div>
+
 <!-- Edit Todo Modal -->
-<div class="popup-overlay" id="editTodoPopup">
+<!-- <div class="popup-overlay" id="editTodoPopup">
     <div class="popup">
         <span class="popup-close" onclick="closeEditPopup()">×</span>
         <h2>Edit Todo</h2>
@@ -258,7 +294,7 @@
             <button onclick="updateTodo()">Save changes</button>
         </div>
     </div>
-</div>
+</div> -->
 
 <!-- View Todo Modal -->
 <div class="popup-overlay" id="viewTodoPopup">
@@ -288,6 +324,12 @@
 
     function closeEditPopup() {
         document.getElementById("editTodoPopup").style.display = "none";
+    }
+    function closeAddPopup() {
+        document.getElementById("AddSub_Task").style.display = "none";
+    }
+    function openAddSub_Task() {
+        document.getElementById("AddSub_Task").style.display = "flex";
     }
 
     
