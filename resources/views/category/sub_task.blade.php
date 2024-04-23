@@ -217,7 +217,7 @@
                         </div>
                         @endif
                         @endforeach
-                        <div class="todo-item">
+                        <!-- <div class="todo-item">
                             <div class="checker"><span class=""><input type="checkbox"></span></div>
                             <span>Work on wordpress</span>
                             <span class="item_left">
@@ -240,7 +240,7 @@
                             <a href="javascript:void(0);" class="float-right edit-todo-item" onclick="openEditPopup()"><i class="fas fa-edit"></i></a>
                             <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="fas fa-trash-alt"></i></a>
                             </span>
-                        </div>
+                        </div> -->
                         <div class="todo-item">
                             
                             <span>{{ $task->notes }}</span>
@@ -258,176 +258,29 @@
 <div class="popup-overlay" id="AddSub_Task">
     <div class="popup">
         <span class="popup-close" onclick="closeAddPopup()">×</span>
-        <h2>Add Category</h2>
+        <h2>Add Sub Task</h2>
         <form class="popup-form" action ="{{ route('sub_task.add',['id' => $task->id])}}" method="POST" onsubmit="submitForm(event)">
         {{csrf_field()}}
         <input type="hidden" name="id" value="{{ $task->id }}">
-        <input type="text" class="form-control" id="addcategory" placeholder="Add Category..." name="title">
+        <input type="text" class="form-control" id="addcategory" placeholder="Add Sub Task..." name="title">
         <div class="popup-buttons">
         <button type="submit">Submits</button>
         </div>
         </form>
     </div>
 </div>
-
-<!-- Edit Todo Modal -->
-<!-- <div class="popup-overlay" id="editTodoPopup">
-    <div class="popup">
-        <span class="popup-close" onclick="closeEditPopup()">×</span>
-        <h2>Edit Todo</h2>
-        <input type="text" class="form-control" id="editTodoInput" placeholder="Edit Todo...">
-        <div class="form-group">
-            <label for="editDueDate">Due Date:</label>
-            <input type="date" class="form-control" id="editDueDate">
-        </div>
-        <div class="form-group">
-            <label for="editTag">Tag:</label>
-            <select class="form-control" id="editTag">
-                <option value="none">None</option>
-                <option value="high">High</option>
-                <option value="mid">Mid</option>
-                <option value="low">Low</option>
-                <option value="urgent">Urgent</option>
-            </select>
-        </div>
-        <div class="popup-buttons">
-            <button onclick="updateTodo()">Save changes</button>
-        </div>
-    </div>
-</div> -->
-
-<!-- View Todo Modal -->
-<div class="popup-overlay" id="viewTodoPopup">
-    <div class="popup">
-        <span class="popup-close" onclick="closeViewPopup()">×</span>
-        <h2>View Todo</h2>
-        <div id="viewTodoDetails"></div>
-    </div>
-</div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBud7TlRbs/ic4AwGcFZOxg5DpPt8EgeUIgIwzjWfXQKWA3" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
 <script>
-    function openEditPopup() {
-        // Get the current todo item's text, due date, and tag
-        const todoText = $(this).closest('.todo-item').find('span:first').text();
-        const dueDate = $(this).closest('.todo-item').find('.due-date').text().split(': ')[1];
-        const tag = $(this).closest('.todo-item').find('.tag').text().toLowerCase();
+    
 
-        // Set the values in the edit popup
-        $('#editTodoInput').val(todoText);
-        $('#editDueDate').val(dueDate);
-        $('#editTag').val(tag);
-        document.getElementById("editTodoPopup").style.display = "flex";
-    }
-
-    function closeEditPopup() {
-        document.getElementById("editTodoPopup").style.display = "none";
-    }
     function closeAddPopup() {
         document.getElementById("AddSub_Task").style.display = "none";
     }
     function openAddSub_Task() {
         document.getElementById("AddSub_Task").style.display = "flex";
     }
-
-    
-
-    function closeViewPopup() {
-        document.getElementById("viewTodoPopup").style.display = "none";
-    }
-
-    function updateTodo() {
-        const editedTodo = $('#editTodoInput').val();
-        const editedDueDate = $('#editDueDate').val();
-        const editedTag = $('#editTag').val();
-
-        // Update the todo item with the edited content
-        // For example, you can update the text, due date, and tag of the todo item
-        $('.todo-list .todo-item').each(function() {
-            if ($(this).hasClass('editing')) {
-                $(this).find('span:first').text(editedTodo);
-                $(this).find('.due-date').text('Due: ' + editedDueDate);
-                if (editedTag === 'none') {
-                    $(this).find('.tag').remove();
-                } else {
-                    $(this).find('.tag').text(editedTag.charAt(0).toUpperCase() + editedTag.slice(1));
-                }
-                $(this).removeClass('editing');
-                closeEditPopup();
-            }
-        });
-    }
-
-    $( document ).ready(function() {
-    
-    "use strict";
-    
-    var todo = function() { 
-        $('.todo-list .todo-item input').click(function() {
-        if($(this).is(':checked')) {
-            $(this).parent().parent().parent().toggleClass('complete');
-        } else {
-            $(this).parent().parent().parent().toggleClass('complete');
-        }
-    });
-    
-    $('.todo-nav .all-task').click(function() {
-        $('.todo-list').removeClass('only-active');
-        $('.todo-list').removeClass('only-complete');
-        $('.todo-nav li.active').removeClass('active');
-        $(this).addClass('active');
-    });
-    
-    $('.todo-nav .active-task').click(function() {
-        $('.todo-list').removeClass('only-complete');
-        $('.todo-list').addClass('only-active');
-        $('.todo-nav li.active').removeClass('active');
-        $(this).addClass('active');
-    });
-    
-    $('.todo-nav .completed-task').click(function() {
-        $('.todo-list').removeClass('only-active');
-        $('.todo-list').addClass('only-complete');
-        $('.todo-nav li.active').removeClass('active');
-        $(this).addClass('active');
-    });
-    
-    $('#uniform-all-complete input').click(function() {
-        if($(this).is(':checked')) {
-            $('.todo-item .checker span:not(.checked) input').click();
-        } else {
-            $('.todo-item .checker span.checked input').click();
-        }
-    });
-    
-    $('.remove-todo-item').click(function() {
-        $(this).parent().remove();
-    });
-    };
-    
-    todo();
-    
-    $(".add-task").keypress(function (e) {
-        if ((e.which == 13)&&(!$(this).val().length == 0)) {
-            $('<div class="todo-item"><div class="checker"><span class=""><input type="checkbox"></span></div> <span>' + $(this).val() + '</span> <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="icon-close"></i></a></div>').insertAfter('.todo-list .todo-item:last-child');
-            $(this).val('');
-        } else if(e.which == 13) {
-            alert('Please enter new task');
-        }
-        $(document).on('.todo-list .todo-item.added input').click(function() {
-            if($(this).is(':checked')) {
-                $(this).parent().parent().parent().toggleClass('complete');
-            } else {
-                $(this).parent().parent().parent().toggleClass('complete');
-            }
-        });
-        $('.todo-list .todo-item.added .remove-todo-item').click(function() {
-            $(this).parent().remove();
-        });
-    });
-});
 </script>
 </body>
 </html>
