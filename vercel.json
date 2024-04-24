@@ -7,7 +7,7 @@
     },
     "routes":[
         {
-            "src": "/img/(.*)",
+            "src": "/logo/(.*)",
             "dest": "/public/logo/"
         },
         {

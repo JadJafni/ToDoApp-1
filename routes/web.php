@@ -16,7 +16,7 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
     Route::post('/dashboard/add','App\Http\Controllers\categoriesController@create')->name('category.add');
-    Route::post('/dashboard/addtask','App\Http\Controllers\taskController@create')->name('task.add');
+    Route::post('/dashboard/addtask','App\Http\Controllers\TaskController@create')->name('task.add');
     Route::get('/dashboard','App\Http\Controllers\TaskController@index')->name('dashboard');
     Route::get('/dashboard/{id}/edit','App\Http\Controllers\TaskController@edit')->name('task.edit');
     Route::PUT('/dashboard/{id}/update','App\Http\Controllers\TaskController@update')->name('task.update');

@@ -302,17 +302,7 @@
                             <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="fas fa-trash-alt"></i></a>
                             </span>
                         </div>
-                        <div class="todo-item">
-                            <div class="checker"><span class=""><input type="checkbox"></span></div>
-                            <span>Error solve in HTML template</span>
-                            <span class="tag tag-urgent">Urgent</span>
-                            <span class="item_left">
-                            <span class="due-date">Due: 2024-04-04</span>
-                            <a href="javascript:void(0);" class="float-right view-todo-item" onclick="openViewPopup()"><i class="fas fa-eye"></i></a>
-                            <a href="{{route('task.edit', $task['id'])}}" class="float-right edit-todo-item" onclick="openEditPopup()"><i class="fas fa-edit"></i></a>
-                            <a href="javascript:void(0);" class="float-right remove-todo-item"><i class="fas fa-trash-alt"></i></a>
-                            </span>
-                        </div> -->
+                         -->
                         <!-- Add more todo items here -->
                     </div>
                 </div>
